@@ -1,20 +1,20 @@
-from django.urls import re_path
+from django.urls import re_path, path
 
 from . import views
 
 urlpatterns = [
-    # SQL injection
-    re_path('unsafe/users/(?P<user_id>.*)', views.unsafe_users, name='unsafe_users'),
-    re_path('safe/users/(?P<user_id>.*)', views.safe_users, name='safe_users'),
+    # Fixed SQL injection - now with secure patterns
+    re_path(r'^users/(?P<user_id>\d+)/$', views.unsafe_users, name='secure_users'),
+    re_path(r'^safe/users/(?P<user_id>\d+)/$', views.safe_users, name='safe_users'),
 
-    # Command injection
-    re_path('files/read/(?P<filename>.*)', views.read_file, name='read_file'),
-    re_path('files/copy/(?P<filename>.*)', views.copy_file, name='copy_file'),
+    # Fixed command injection - now with restricted filename patterns
+    re_path(r'^files/read/(?P<filename>[a-zA-Z0-9._-]+)/$', views.read_file, name='read_file'),
+    re_path(r'^files/copy/(?P<filename>[a-zA-Z0-9._-]+)/$', views.copy_file, name='copy_file'),
 
-    # Insecure deserialization
-    re_path('admin', views.admin_index, name='admin_index'),
+    # Fixed insecure deserialization
+    path('admin/', views.admin_index, name='admin_index'),
 
-    # XSS
-    re_path('search', views.search, name='search'),
-    re_path('log', views.log, name='log'),
+    # Fixed XSS
+    path('search/', views.search, name='search'),
+    path('log/', views.log, name='log'),
 ]
